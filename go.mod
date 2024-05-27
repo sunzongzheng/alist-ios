@@ -87,6 +87,8 @@ require (
 	github.com/ipfs/boxo v0.12.0 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/xo/terminfo v0.0.0-20220910002029-abceb7e1c41e // indirect
+	golang.org/x/mobile v0.0.0-20240716161057-1ad2df20a8b6 // indirect
+	golang.org/x/mod v0.19.0 // indirect
 )
 
 require (
@@ -234,3 +236,7 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	lukechampine.com/blake3 v1.1.7 // indirect
 )
+
+replace github.com/shoenig/go-m1cpu => ./go-m1cpu
+
+replace github.com/shirou/gopsutil/v3 => ./gopsutil

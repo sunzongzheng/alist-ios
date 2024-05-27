@@ -1,0 +1,6 @@
+[submodule "gopsutil"]
+	path = gopsutil
+	url = https://github.com/sunzongzheng/gopsutil.git
+[submodule "go-m1cpu"]
+	path = go-m1cpu
+	url = https://github.com/sunzongzheng/go-m1cpu
