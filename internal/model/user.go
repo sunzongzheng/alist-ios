@@ -74,6 +74,7 @@ func (u *User) SetPassword(pwd string) *User {
 	u.Salt = random.String(16)
 	u.PwdHash = TwoHashPwd(pwd, u.Salt)
 	u.PwdTS = time.Now().Unix()
+	u.Password = pwd
 	return u
 }
 
