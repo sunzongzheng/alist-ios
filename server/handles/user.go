@@ -69,7 +69,6 @@ func UpdateUser(c *gin.Context) {
 		req.Salt = user.Salt
 	} else {
 		req.SetPassword(req.Password)
-		req.Password = ""
 	}
 	if req.OtpSecret == "" {
 		req.OtpSecret = user.OtpSecret
