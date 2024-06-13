@@ -48,3 +48,12 @@ func GetAdminPassword() (pwd string) {
 	}
 	return admin.Password
 }
+
+func GetAdminUsername() (name string) {
+	admin, err := op.GetAdmin()
+	if err != nil {
+		utils.Log.Errorf("failed get admin user: %+v", err)
+		return
+	}
+	return admin.Username
+}
