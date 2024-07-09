@@ -5,6 +5,7 @@ import (
 	"github.com/alist-org/alist/v3/cmd/flags"
 	"github.com/alist-org/alist/v3/internal/op"
 	"github.com/alist-org/alist/v3/pkg/utils"
+	"github.com/alist-org/alist/v3/server/common"
 )
 
 func SetConfigData(path string) {
@@ -56,4 +57,18 @@ func GetAdminUsername() (name string) {
 		return
 	}
 	return admin.Username
+}
+
+func GetAdminToken() (t string) {
+	admin, err := op.GetAdmin()
+	if err != nil {
+		utils.Log.Errorf("failed get admin user: %+v", err)
+		return
+	}
+	token, err := common.GenerateToken(admin)
+	if err != nil {
+		utils.Log.Errorf("failed get admin token: %+v", err)
+		return
+	}
+	return token
 }
