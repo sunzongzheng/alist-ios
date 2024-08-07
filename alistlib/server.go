@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/alist-org/alist/v3/eventbus"
+	"github.com/alist-org/alist/v3/internal/model"
 	"net"
 	"net/http"
 	"os"
@@ -25,6 +27,10 @@ type LogCallback interface {
 	OnLog(level int16, time int64, message string)
 }
 
+type DataChangeCallback interface {
+	OnChange(model string)
+}
+
 type Event interface {
 	OnStartError(t string, err string)
 	OnShutdown(t string)
@@ -33,12 +39,13 @@ type Event interface {
 
 var event Event
 var logFormatter *internal.MyFormatter
+var listener eventbus.IDisposable
 
-func Init(e Event, cb LogCallback) error {
+func Init(e Event, logCallback LogCallback) error {
 	event = e
 	logFormatter = &internal.MyFormatter{
 		OnLog: func(entry *log.Entry) {
-			cb.OnLog(int16(entry.Level), entry.Time.UnixMilli(), entry.Message)
+			logCallback.OnLog(int16(entry.Level), entry.Time.UnixMilli(), entry.Message)
 		},
 	}
 	if utils.Log == nil {
@@ -78,7 +85,7 @@ func IsRunning(t string) bool {
 }
 
 // Start starts the server
-func Start() {
+func Start(dataChangeCallback DataChangeCallback) {
 	if conf.Conf.DelayedStart != 0 {
 		utils.Log.Infof("delayed start for %d seconds", conf.Conf.DelayedStart)
 		time.Sleep(time.Duration(conf.Conf.DelayedStart) * time.Second)
@@ -139,6 +146,12 @@ func Start() {
 			unixSrv = nil
 		}()
 	}
+
+	dispose, _ := eventbus.Subscribe[*model.DataChangeEvent]()(func(ctx context.Context, event *model.DataChangeEvent) error {
+		dataChangeCallback.OnChange(event.Model)
+		return nil
+	})
+	listener = dispose
 }
 
 func shutdown(srv *http.Server, timeout time.Duration) error {
@@ -183,6 +196,7 @@ func Shutdown(timeout int64) (err error) {
 		utils.Log.Println("Server UNIX Shutdown")
 	}
 
+	listener.Dispose()
 	//cmd.Release()
 	return nil
 }
